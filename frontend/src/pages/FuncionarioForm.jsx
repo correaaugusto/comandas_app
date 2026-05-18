@@ -5,16 +5,16 @@ import {
   Box,
   Grid,
   MenuItem,
-  InputLabel,
   Paper
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import PageLayout from "../components/common/PageLayout";
 import useValidationRules from "../hooks/useValidationRules";
-import { useMasks } from '../hooks/useMasks';
+import { useMasks } from "../hooks/useMask";
 
 const FuncionarioForm = () => {
+
   const navigate = useNavigate();
   const validationRules = useValidationRules();
 
@@ -24,6 +24,13 @@ const FuncionarioForm = () => {
     formState: { errors }
   } = useForm();
 
+  const {
+    applyCpfMask,
+    applyPhoneMask,
+    cleanCpf,
+    cleanPhone
+  } = useMasks();
+
   const onSubmit = (data) => {
     console.log("Dados funcionário:", data);
   };
@@ -32,24 +39,18 @@ const FuncionarioForm = () => {
     navigate("/funcionarios");
   };
 
-  
-    const {
-            applyCpfMask,
-            applyPhoneMask,
-            cleanCpf,
-            cleanPhone
-        } = useMasks();
-
   return (
+
     <PageLayout title="Funcionário">
+
       <Paper sx={{ p: 3 }}>
+
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
 
           <Grid container spacing={3}>
 
             {/* Nome */}
             <Grid item xs={12} md={6}>
-              <InputLabel sx={{ mb: 1 }}>Nome</InputLabel>
 
               <Controller
                 name="nome"
@@ -57,20 +58,23 @@ const FuncionarioForm = () => {
                 defaultValue=""
                 rules={validationRules.nome}
                 render={({ field }) => (
+
                   <TextField
                     {...field}
                     fullWidth
+                    label="Nome"
                     placeholder="Digite o nome"
                     error={!!errors.nome}
                     helperText={errors.nome?.message}
                   />
+
                 )}
               />
+
             </Grid>
 
             {/* Matrícula */}
             <Grid item xs={12} md={6}>
-              <InputLabel sx={{ mb: 1 }}>Matrícula</InputLabel>
 
               <Controller
                 name="matricula"
@@ -80,104 +84,99 @@ const FuncionarioForm = () => {
                   required: "Matrícula é obrigatória"
                 }}
                 render={({ field }) => (
+
                   <TextField
                     {...field}
                     fullWidth
+                    label="Matrícula"
                     placeholder="Digite a matrícula"
                     error={!!errors.matricula}
                     helperText={errors.matricula?.message}
                   />
+
                 )}
               />
+
             </Grid>
 
             {/* CPF */}
             <Grid item xs={12} md={4}>
-              <InputLabel sx={{ mb: 1 }}>CPF</InputLabel>
 
               <Controller
-                        name="cpf"
-                        control={control}
-                        defaultValue=""
-                        rules={validationRules.cpf}
-                        render={({ field }) => (
+                name="cpf"
+                control={control}
+                defaultValue=""
+                rules={validationRules.cpf}
+                render={({ field }) => (
 
-                        <TextField
-                            {...field}
-                            label="CPF"
-                            fullWidth
-                            margin="normal"
+                  <TextField
+                    {...field}
+                    label="CPF"
+                    fullWidth
+                    error={!!errors.cpf}
+                    helperText={errors.cpf?.message}
+                    onChange={(e) => {
 
-                            error={!!errors.cpf}
+                      const value =
+                        cleanCpf(e.target.value);
 
-                            helperText={errors.cpf?.message}
+                      field.onChange(value);
+                    }}
+                    value={
+                      field.value
+                        ? applyCpfMask(field.value)
+                        : ""
+                    }
+                    inputProps={{
+                      maxLength: 14
+                    }}
+                  />
 
-                            onChange={(e) => {
+                )}
+              />
 
-                                const value =
-                                    cleanCpf(e.target.value);
-
-                                field.onChange(value);
-                            }}
-
-                            value={
-                                field.value
-                                    ? applyCpfMask(field.value)
-                                    : ""
-                            }
-
-                            inputProps={{
-                                maxLength: 14
-                            }}
-                        />
-
-                    )}
-                />
             </Grid>
 
             {/* Telefone */}
             <Grid item xs={12} md={4}>
-              <InputLabel sx={{ mb: 1 }}>Telefone</InputLabel>
 
               <Controller
-                    name="telefone"
-                    control={control}
-                    defaultValue=""
-                    rules={validationRules.telefone}
-                    render={({ field }) => (
+                name="telefone"
+                control={control}
+                defaultValue=""
+                rules={validationRules.telefone}
+                render={({ field }) => (
 
-                        <TextField
-                            {...field}
-                            label="Telefone"
-                            fullWidth
-                            margin="normal"
+                  <TextField
+                    {...field}
+                    label="Telefone"
+                    fullWidth
+                    error={!!errors.telefone}
+                    helperText={errors.telefone?.message}
+                    onChange={(e) => {
 
-                            onChange={(e) => {
+                      const value =
+                        cleanPhone(e.target.value);
 
-                                const value =
-                                    cleanPhone(e.target.value);
+                      field.onChange(value);
+                    }}
+                    value={
+                      field.value
+                        ? applyPhoneMask(field.value)
+                        : ""
+                    }
+                    inputProps={{
+                      maxLength: 15
+                    }}
+                  />
 
-                                field.onChange(value);
-                            }}
+                )}
+              />
 
-                            value={
-                                field.value
-                                    ? applyPhoneMask(field.value)
-                                    : ""
-                            }
-
-                            inputProps={{
-                                maxLength: 15
-                            }}
-                        />
-
-                    )}
-                />
             </Grid>
 
             {/* Grupo */}
             <Grid item xs={12} md={4}>
-              <InputLabel sx={{ mb: 1 }}>Grupo</InputLabel>
 
               <Controller
                 name="grupo"
@@ -187,24 +186,37 @@ const FuncionarioForm = () => {
                   required: "Grupo é obrigatório"
                 }}
                 render={({ field }) => (
+
                   <TextField
                     {...field}
                     select
                     fullWidth
+                    label="Grupo"
                     error={!!errors.grupo}
                     helperText={errors.grupo?.message}
                   >
-                    <MenuItem value={1}>Administrador</MenuItem>
-                    <MenuItem value={2}>Caixa</MenuItem>
-                    <MenuItem value={3}>Atendente</MenuItem>
+
+                    <MenuItem value={1}>
+                      Administrador
+                    </MenuItem>
+
+                    <MenuItem value={2}>
+                      Caixa
+                    </MenuItem>
+
+                    <MenuItem value={3}>
+                      Atendente
+                    </MenuItem>
+
                   </TextField>
+
                 )}
               />
+
             </Grid>
 
             {/* Senha */}
             <Grid item xs={12}>
-              <InputLabel sx={{ mb: 1 }}>Senha</InputLabel>
 
               <Controller
                 name="senha"
@@ -212,16 +224,20 @@ const FuncionarioForm = () => {
                 defaultValue=""
                 rules={validationRules.senha}
                 render={({ field }) => (
+
                   <TextField
                     {...field}
                     type="password"
                     fullWidth
+                    label="Senha"
                     placeholder="Digite a senha"
                     error={!!errors.senha}
                     helperText={errors.senha?.message}
                   />
+
                 )}
               />
+
             </Grid>
 
           </Grid>
@@ -235,6 +251,7 @@ const FuncionarioForm = () => {
               mt: 4
             }}
           >
+
             <Button onClick={handleCancel}>
               Cancelar
             </Button>
@@ -245,10 +262,13 @@ const FuncionarioForm = () => {
             >
               Salvar
             </Button>
+
           </Box>
 
         </Box>
+
       </Paper>
+
     </PageLayout>
   );
 };

@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { useMasks } from '../hooks/useMasks';
+import { useMasks } from '../hooks/useMask';
 
 import {
     TextField,
